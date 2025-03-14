@@ -7,6 +7,7 @@ import Profile from './components/Profile';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
 import CreateAccount from './components/CreateAccount';
+import AbsenceVerification from './components/AbsenceVerification';
 
 function App() {
   const [user, setUser] = useState(null); // 로그인 초기 상태를 null로 설정
@@ -84,6 +85,17 @@ function App() {
           
           <Route path="/profile" element={
             user ? <Profile user={user} />
+            : <Navigate to="/login" replace />
+          } />
+          {/* Changed to use AbsenceVerification for both routes */}
+          <Route path="/verify-attendance" element={  
+            user ? <AbsenceVerification user={user} />
+            : <Navigate to="/login" replace />
+          } /> 
+          
+          {/* Fixed spelling from "absense" to "absence" */}
+          <Route path="/absence-verification" element={
+            user ? <AbsenceVerification user={user} />
             : <Navigate to="/login" replace />
           } />
 

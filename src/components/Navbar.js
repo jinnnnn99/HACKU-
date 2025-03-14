@@ -21,6 +21,7 @@ const Navbar = ({ userPoints, onLogout }) => {
         <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>ホーム</Link>
         <Link to="/create" style={{ color: 'white', textDecoration: 'none' }}>アクティビティ作成</Link>
         <Link to="/verify-attendance" style={{ color: 'white', textDecoration: 'none' }}>出席確認</Link>
+        <Link to="/absence-verification" style={{ color: 'white', textDecoration: 'none' }}>欠席証明</Link>
         <Link to="/profile" style={{ color: 'white', textDecoration: 'none' }}>プロフィール</Link>
       </div>
       
