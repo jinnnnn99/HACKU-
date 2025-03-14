@@ -1,27 +1,38 @@
-import React, { useState } from 'react';
+// src/components/AttendanceVerification.js
+import React, { useState, useEffect } from 'react';
 
 function AttendanceVerification({ user, onAddPoints }) {
   const [scannedUserId, setScannedUserId] = useState('');
   const [selectedActivity, setSelectedActivity] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [message, setMessage] = useState('');
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const activitiesToVerify = [
-    { id: 1, name: 'サッカーマッチ', date: '2025-03-12' },
-    { id: 2, name: 'バドミントンダブルス', date: '2025-03-15' },
-    { id: 3, name: 'バーベキューパーティー', date: '2025-03-20' }
-  ];
+  // Fetch activities from the backend
+  useEffect(() => {
+    fetch('http://localhost:5003/activities')
+      .then(response => response.json())
+      .then(data => {
+        if (data.activities) {
+          setActivities(data.activities);
+        }
+      })
+      .catch(error => console.error('Failed to fetch activities:', error));
+  }, []);
 
-  // 출석 확인 처리
+  // Handle attendance verification
   const handleVerifyAttendance = () => {
     if (!scannedUserId) {
-        alert('ユーザーIDを入力してください。');
-        return;
+      alert('ユーザーIDを入力してください。');
+      return;
     }
     if (!selectedActivity) {
-        alert('アクティビティを選択してください。');
-        return;
+      alert('アクティビティを選択してください。');
+      return;
     }
+
+    setLoading(true);
 
     fetch('http://localhost:5003/attendance-verification', {
       method: 'POST',
@@ -36,26 +47,31 @@ function AttendanceVerification({ user, onAddPoints }) {
     .catch(error => {
       console.error('Error verifying attendance:', error);
       setMessage('出席確認に失敗しました。');
+    })
+    .finally(() => {
+      setLoading(false);
     });
   };
 
-  // 파일 선택 처리
+  // Handle file selection
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file && file.type.startsWith('image/')) {
-        setSelectedFile(file);
+      setSelectedFile(file);
     } else {
-        alert('有効な画像ファイルを選択してください。');
-        setSelectedFile(null);
+      alert('有効な画像ファイルを選択してください。');
+      setSelectedFile(null);
     }
   };
 
-  // 인증 사진 업로드 및 포인트 지급 처리
+  // Handle photo upload and point award
   const handleUploadPhoto = () => {
     if (!selectedFile) {
       alert('写真を選択してください。');
       return;
     }
+
+    setLoading(true);
 
     const formData = new FormData();
     formData.append('photo', selectedFile);
@@ -69,7 +85,7 @@ function AttendanceVerification({ user, onAddPoints }) {
     .then(data => {
       if (data.status === 'success') {
         setMessage(data.message);
-        onAddPoints(10);
+        if (onAddPoints) onAddPoints(10);
         setSelectedFile(null);
       } else {
         setMessage(data.message);
@@ -78,6 +94,9 @@ function AttendanceVerification({ user, onAddPoints }) {
     .catch(error => {
       console.error('Failed to upload photo:', error);
       setMessage('写真のアップロードに失敗しました。もう一度試してください。');
+    })
+    .finally(() => {
+      setLoading(false);
     });
   };
 
@@ -99,32 +118,39 @@ function AttendanceVerification({ user, onAddPoints }) {
       />
       
       <select 
+        value={selectedActivity}
         onChange={(e) => setSelectedActivity(e.target.value)} 
         required 
         style={{ marginBottom: '10px', width: '100%', padding: '8px' }}
       >
         <option value="">アクティビティを選択</option>
-        {activitiesToVerify.map(activity => (
-          <option key={activity.id} value={activity.id}>{activity.name}</option>
+        {activities.map(activity => (
+          <option key={activity.id} value={activity.id}>
+            {activity.name}
+          </option>
         ))}
       </select>
       
       <button 
         onClick={handleVerifyAttendance} 
+        disabled={loading}
         style={{
           padding: '10px 20px',
-          backgroundColor: '#2965a8',
+          backgroundColor: loading ? '#cccccc' : '#2965a8',
           color: '#fff',
           border: 'none',
           borderRadius: '5px',
-          cursor: 'pointer',
+          cursor: loading ? 'not-allowed' : 'pointer',
           marginBottom: '20px'
         }}
       >
-        出席を確認する
+        {loading ? '処理中...' : '出席を確認する'}
       </button>
 
       <h2>証拠写真をアップロードする</h2>
+      <p style={{ marginBottom: '10px', fontStyle: 'italic', color: '#666' }}>
+        特別なポーズ（両手を頭の上に置く）で撮影した写真をアップロードしてください。
+      </p>
       <input 
         type="file" 
         accept="image/*" 
@@ -134,16 +160,17 @@ function AttendanceVerification({ user, onAddPoints }) {
       
       <button 
         onClick={handleUploadPhoto} 
+        disabled={loading}
         style={{
           padding: '10px 20px',
-          backgroundColor: '#4caf50',
+          backgroundColor: loading ? '#cccccc' : '#4caf50',
           color: '#fff',
           border: 'none',
           borderRadius: '5px',
-          cursor: 'pointer'
+          cursor: loading ? 'not-allowed' : 'pointer'
         }}
       >
-        写真をアップロードして10ポイントを取得
+        {loading ? '処理中...' : '写真をアップロードして10ポイントを取得'}
       </button>
     </div>
   );
