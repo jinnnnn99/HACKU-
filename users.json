@@ -1,0 +1,18 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "username": "user1",
+            "password": "password1",
+            "points": 50,
+            "joinedActivities": [1, 2]
+        },
+        {
+            "id": 2,
+            "username": "user2",
+            "password": "password2",
+            "points": 20,
+            "joinedActivities": []
+        }
+    ]
+}

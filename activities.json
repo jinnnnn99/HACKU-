@@ -1,0 +1,39 @@
+{
+    "activities": [
+        {
+            "id": 1,
+            "name": "サッカー",
+            "cost": 3,
+            "date": "未設定",
+            "location": "未設定",
+            "organizer": "管理者",
+            "requiredParticipants": 1,
+            "currentParticipants": 0,
+            "description": ""
+        },
+        {
+            "id": 2,
+            "name": "野球",
+            "cost": 4,
+            "date": "2025-03-15",
+            "time": "10:03",
+            "location": "未設定",
+            "organizer": "管理者",
+            "requiredParticipants": 1,
+            "currentParticipants": 0,
+            "description": "OO公園で野球やる人~!"
+        },
+        {
+            "id": 3,
+            "name": "バレーボール",
+            "cost": 5,
+            "date": "2025-03-18",
+            "time": "10:15",
+            "location": "OO体育館",
+            "organizer": "管理者",
+            "requiredParticipants": 1,
+            "currentParticipants": 0,
+            "description": "バレーボール初心者です！楽しくやりましょー！！"
+        }
+    ]
+}
