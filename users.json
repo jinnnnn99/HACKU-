@@ -5,13 +5,23 @@
             "username": "user1",
             "password": "password1",
             "points": 50,
-            "joinedActivities": [1, 2]
+            "joinedActivities": [
+                1,
+                2
+            ]
         },
         {
             "id": 2,
             "username": "user2",
             "password": "password2",
             "points": 20,
+            "joinedActivities": []
+        },
+        {
+            "id": 3,
+            "username": "aaa@gmail.com",
+            "password": "$2b$12$Bu5lWLk/FR/py5cNNHddXOIiY13z5FWsbE5B1ZVViquGNSF6BwDj2",
+            "points": 14,
             "joinedActivities": []
         }
     ]

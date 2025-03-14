@@ -1,11 +1,10 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import Home from './components/Home';
 import CreateEvent from './components/CreateEvent';
 import Profile from './components/Profile';
 import Navbar from './components/Navbar';
-import Login from './components/Login';
+import Login from './components/login';
 import CreateAccount from './components/CreateAccount';
 import AttendanceVerification from './components/AttendanceVerification';
 
@@ -14,8 +13,8 @@ function App() {
   const [activities, setActivities] = useState([]);
 
   useEffect(() => {
-    // 초기 활동 데이터를 서버에서 불러옴
-    fetch('http://localhost:5003/activity-details')
+    // 초기 활동 데이터를 서버에서 불러옴 (Flask API 호출)
+    fetch('http://localhost:5003/activities')
       .then(response => response.json())
       .then(data => setActivities(data.activities))
       .catch(error => console.error('Failed to fetch activities:', error));
@@ -30,28 +29,59 @@ function App() {
   };
 
   const handleJoinEvent = (eventId, cost) => {
-    setUser(prev => ({ 
-      ...prev, 
-      points: prev.points - cost,
-      joinedActivities: [...prev.joinedActivities, eventId]
+    if (!user) return;
+
+    const updatedPoints = user.points - cost;
+    const updatedActivities = [...user.joinedActivities, eventId];
+
+    setUser(prev => ({
+      ...prev,
+      points: updatedPoints,
+      joinedActivities: updatedActivities
     }));
 
-    // 서버에 포인트 차감 및 참여한 활동 저장 요청
-    fetch('http://localhost:5003/update-user', {
+    // 📌 서버에 포인트 차감 및 참여한 활동 저장 요청
+    fetch('http://localhost:5003/use-points', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         username: user.username,
-        points: user.points - cost,
-        joinedActivities: [...user.joinedActivities, eventId]
+        cost: cost
       })
-    }).catch(error => console.error('Failed to update user data:', error));
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        console.log('ポイント更新完了:', data);
+      } else {
+        console.error('ポイント更新失敗:', data.message);
+      }
+    })
+    .catch(error => console.error('Failed to update user data:', error));
   };
 
   const handleCreateEvent = (newEvent) => {
     setActivities(prev => [...prev, newEvent]);
+
+    // 📌 Flask API에 새로운 이벤트 저장 요청
+    fetch('http://localhost:5003/create-event', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(newEvent)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'Event created') {
+        console.log('イベント作成成功:', data);
+      } else {
+        console.error('イベント作成失敗:', data.message);
+      }
+    })
+    .catch(error => console.error('Failed to create event:', error));
   };
 
   return (
@@ -94,7 +124,6 @@ function App() {
                }} />
               : <Navigate to="/login" replace />
           } />
-      
 
           {/* 잘못된 경로 접근 시 로그인 화면으로 */}
           <Route path="*" element={<Navigate to="/login" replace />} />

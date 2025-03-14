@@ -1,4 +1,3 @@
-// src/components/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,25 +7,42 @@ function Login({ onLogin }) {
   const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  // 🔹 로그인 및 회원가입 핸들러 (isRegistering 상태에 따라 동작)
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // In a real app, this would validate credentials with your backend
-    if (email && password) {
-      // Create a mock user for demonstration
-      const user = {
-        id: '123',
-        email: email,
-        username: email.split('@')[0],
-        points: 20,
-        joinedActivities: [],
-        createdActivities: []
-      };
-      
-      onLogin(user);
-      navigate('/');
-    } else {
+
+    if (!email || !password) {
       alert('メールアドレスとパスワードを入力してください');
+      return;
+    }
+
+    const endpoint = isRegistering ? "http://127.0.0.1:5003/register" : "http://127.0.0.1:5003/login";
+    const payload = { username: email, password };
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (result.status === "error") {
+        alert(result.message);
+      } else {
+        if (isRegistering) {
+          alert("登録が完了しました！ログインしてください。");
+          setIsRegistering(false); // 🔹 회원가입 후 로그인 화면으로 전환
+        } else {
+          alert("ログイン成功！");
+          onLogin(result.user); // 🔹 로그인 상태 업데이트
+          navigate('/'); // 🔹 홈 화면으로 이동
+        }
+      }
+    } catch (error) {
+      alert('処理中にエラーが発生しました。');
+      console.error("Error:", error);
     }
   };
 
