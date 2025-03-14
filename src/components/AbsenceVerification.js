@@ -4,8 +4,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 function AbsenceVerification({ user }) {
   const [reason, setReason] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [filePreview, setFilePreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -13,25 +11,11 @@ function AbsenceVerification({ user }) {
   // Check which route is being accessed
   const isAttendanceVerification = location.pathname === '/verify-attendance';
   
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      
-      // Create a preview URL for the image
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFilePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    if ((!isAttendanceVerification && !reason) || !selectedFile) {
-      alert(isAttendanceVerification ? '写真を提供してください' : '理由と写真の両方を提供してください');
+    if (!isAttendanceVerification && !reason) {
+      alert('理由を入力してください');
       return;
     }
     
@@ -42,7 +26,6 @@ function AbsenceVerification({ user }) {
     if (!isAttendanceVerification) {
       formData.append('reason', reason);
     }
-    formData.append('photo', selectedFile);
     
     fetch('http://localhost:5003/upload-photo', {
       method: 'POST',
@@ -61,7 +44,7 @@ function AbsenceVerification({ user }) {
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('写真のアップロードに失敗しました');
+        alert('送信に失敗しました');
       })
       .finally(() => {
         setIsLoading(false);
@@ -106,61 +89,17 @@ function AbsenceVerification({ user }) {
           </div>
         )}
         
-        <div style={{ marginBottom: '30px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
-            {isAttendanceVerification ? '出席証明写真' : '証明写真'}のアップロード
-          </label>
-          <div style={{ 
-            border: '2px dashed #ddd', 
-            borderRadius: '4px', 
-            padding: '20px',
-            textAlign: 'center'
-          }}>
+        {isAttendanceVerification && (
+          <div style={{ marginBottom: '30px', textAlign: 'center' }}>
             <p style={{ 
               color: '#666', 
               marginBottom: '15px',
               fontStyle: 'italic'
             }}>
-              特別なポーズ（両手を頭の上に置く）で撮影した写真をアップロードしてください。
-              <br />
-              これは{isAttendanceVerification ? '出席確認' : '欠席証明'}のために必要です。
+              出席を確認するためのボタンを押してください。
             </p>
-            
-            <input 
-              type="file" 
-              accept="image/*" 
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-              id="photo-upload"
-              required
-            />
-            <label htmlFor="photo-upload" style={{
-              display: 'inline-block',
-              backgroundColor: '#f5f5f5',
-              color: '#333',
-              padding: '10px 15px',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              border: '1px solid #ddd'
-            }}>
-              写真を選択
-            </label>
-            
-            {filePreview && (
-              <div style={{ marginTop: '15px' }}>
-                <img 
-                  src={filePreview} 
-                  alt="アップロード写真プレビュー" 
-                  style={{ 
-                    maxWidth: '100%', 
-                    maxHeight: '200px',
-                    borderRadius: '4px'
-                  }} 
-                />
-              </div>
-            )}
           </div>
-        </div>
+        )}
         
         <button 
           type="submit" 
