@@ -144,8 +144,15 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project includes software that is distributed under multiple licenses:
 
+- **MIT License**: Components such as React, React Router, Testing Library, and QRCode React are licensed under the MIT License, which permits commercial use, modification, distribution, and private use.
+
+- **Apache License 2.0**: Google's Web Vitals and other components are provided under the Apache License 2.0, which includes protections against patent claims and allows free use, modification, and distribution of the software.
+
+- **BSD License**: If any components used are under the BSD license, this license is permissive, allowing for redistribution and use in source and binary forms, with or without modification.
+
+For specific licensing information and more details, please refer to the individual files and components within the project. This includes a review of any specific terms linked to the usage rights of particular libraries or tools.
 ## Acknowledgements
 
 - Special thanks to all contributors
